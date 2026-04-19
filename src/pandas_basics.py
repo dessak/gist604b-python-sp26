@@ -208,35 +208,78 @@ def calculate_station_statistics(df):
           - Stations with data: 5
           - Average readings per station: 200.0
     """
+    # Input validation
+    if df is None or len(df) == 0:
+        print("❌ ERROR: DataFrame is empty or None")
+        return pd.DataFrame()
     
+    # Check for required columns
+    required_columns = ['station_id', 'temperature_c', 'humidity_percent']
+    missing_columns = [col for col in required_columns if col not in df.columns]
+    
+    if missing_columns:
+        print(f"❌ ERROR: Missing required columns: {missing_columns}")
+        print(f"Available columns: {list(df.columns)}")
+        return pd.DataFrame()
+
+    # Print header
+    print("=" * 50)
+    print("CALCULATING STATION STATISTICS")
+    print("=" * 50)   
     # TODO: Print a header
     # TODO: Use print("=" * 50) and print("CALCULATING STATION STATISTICS")
-    
+
+    # Get unique stations
+    nunique_stations = df['station_id'].nunique()
+    print(f"Found {nunique_stations} weather stations")
     # TODO: Count unique stations
     # TODO: Use df['station_id'].nunique()
-    
+
+    # Group data by station
+    grouped = df.groupby('station_id')    
     # TODO: Group by station_id
     # TODO: Use df.groupby('station_id')
-    
+
+    # Calculate statistics
+    avg_temperature = grouped['temperature_c'].mean().round(1)
+    avg_humidity = grouped['humidity_percent'].mean().round(1)
+    reading_count = grouped.size()
+
+    # Create summary DataFrame
+    summary = pd.DataFrame({
+        'station_id': avg_temperature.index,
+        'avg_temperature': avg_temperature.values,
+        'avg_humidity': avg_humidity.values,
+        'reading_count': reading_count.values
+    })   
     # TODO: Calculate statistics for each group
     # TODO: - Count of readings: use .size() or .count()
     # TODO: - Average temperature: use .mean()
     # TODO: Create a new DataFrame with these statistics
     
+    summary.reset_index()
     # TODO: Reset the index to make station_id a regular column
     # TODO: Use .reset_index()
-    
+
+
     # TODO: Rename columns to be clear
     # TODO: Use .rename(columns={'temperature_c': 'avg_temperature', ...})
-    
+
+    # Print summary of results
+    print(f"\nTemperature range across all stations: {summary['avg_temperature'].min():.1f}°C to {summary['avg_temperature'].max():.1f}°C")
+    print(f"Humidity range across all stations: {summary['avg_humidity'].min():.1f}% to {summary['avg_humidity'].max():.1f}%")
+    print(f"Total readings processed: {summary['reading_count'].sum():,}")
+    print(f"Number of stations: {nunique_stations}")
+    print(f"Average readings per station: {summary['reading_count'].mean():.0f}")    
     # TODO: Print summary statistics
     # TODO: - Total readings analyzed
     # TODO: - Number of stations
     # TODO: - Average readings per station
-    
+
+    return summary    
     # TODO: Return the statistics DataFrame
     
-    pass  # Remove this line when you implement the function
+
 
 
 # =============================================================================
