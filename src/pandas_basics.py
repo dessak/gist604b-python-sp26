@@ -123,10 +123,10 @@ def filter_environmental_data(df, min_temp=15, max_temp=30, quality="good"):
           - Temperature: 20.0°C to 30.0°C
           - Data quality: good
     """
-    
-    print("=" * 50)
-    print("FILTERING ENVIRONMENTAL DATA")
-    print("=" * 50)
+    # Input validation
+    if df is None or df.empty:
+        print("❌ ERROR: Empty or None DataFrame provided")
+        return pd.DataFrame()
     
     # Check for required columns
     required_columns = ['temperature_c', 'data_quality']
@@ -137,52 +137,45 @@ def filter_environmental_data(df, min_temp=15, max_temp=30, quality="good"):
         print(f"📋 Available columns: {list(df.columns)}")
         return pd.DataFrame()
     
-    original_count = len(df)
-    print(f"📊 Starting with {original_count} rows of environmental data")
-    
+
+    print(f"📊 Loaded {len(df)} temperature readings")
+    print(f"📋 Columns: {list(df.columns)}")
+    print("\n🔍 First 5 rows:")
+    print(df.head())
+
+    print("=" * 50)
+    print("FILTERING ENVIRONMENTAL DATA")
+    print("=" * 50)
+    # TODO: Print a header
+    # TODO: Use print("=" * 50) and print("FILTERING ENVIRONMENTAL DATA")
+
+    print(f"Shape: {df.shape}")
+    print(f"🌡️  Original data: {len(df)} rows")
+    # TODO: Print the original DataFrame shape
+    # TODO: Use len(df) to get the number of rows
+
+    filtered_df = df[(df['temperature_c'] >= min_temp) & (df['temperature_c'] <= max_temp)]
     # TODO: Filter by temperature range using boolean indexing
     # TODO: Create a mask: (df['temperature_c'] >= min_temp) & (df['temperature_c'] <= max_temp)
     # TODO: Apply the mask: filtered_df = df[mask]
-        # Temperature range filter
-    mask = (df['temperature_c'] >= min_temp) & (df['temperature_c'] <= max_temp)
-    filtered_df = df[mask]
-    temp_filtered_count = filtered_df.sum()
-    temp_removed = original_count - temp_filtered_count
-    print(f"   🌡️  Temperature filter: kept {temp_filtered_count}, removed {temp_removed} rows")
-    
-    
+
+    filtered_df = filtered_df[filtered_df['data_quality'] == quality]
     # TODO: Filter by data quality
     # TODO: Add another condition: filtered_df = filtered_df[filtered_df['data_quality'] == quality]
-        # Check if quality level exists
-    available_qualities = filtered_df['data_quality'].unique()
-    if quality not in available_qualities:
-        print(f"\n⚠️  WARNING: Quality level '{quality}' not found in data")
-        print(f"📋 Available quality levels: {list(available_qualities)}")
-        print("🔄 Returning original data without quality filtering...")
-        filtered_df = pd.Series([True] * len(filtered_df), index=filtered_df.index)  # No filtering
-    else:
-        filtered_df = filtered_df['data_quality'] == quality
-    
+
+    print(f"✅ Filtered data: {len(filtered_df)} rows remain")
+    print(f"📉 Remaining: ({(len(filtered_df))/len(df)*100:.1f}%)")
+    print(f"Filters used:\nTemp min: {min_temp}\nTemp Max: {max_temp}\nQuality: {quality}")
+
     # TODO: Calculate and print filtering statistics
     # TODO: - How many rows remain after filtering
     # TODO: - What percentage of data was retained
     # TODO: - Show the filter criteria used
-    final_count = len(filtered_df)
-    removal_rtn = (final_count / original_count) * 100 if original_count > 0 else 0
-    
-    print(f"\n📈 FILTERING RESULTS:")
-    print(f"   Original dataset: {original_count} rows")
-    print(f"   After filtering: {final_count} rows kept")
-    print(f"   Percent retained: ({removal_rtn:.1f}%)")
 
-    print(f"   🌡️  Temperature filter: kept {temp_filtered_count}, removed {temp_removed} rows")
-    print(f"   🏷️  Quality filter: kept {quality_filtered_count}, removed {quality_removed} rows")
-
-    
-    # TODO: Return the filtered DataFrame
     return filtered_df
-    
-    pass  # Remove this line when you implement the function
+    # TODO: Return the filtered DataFrame
+
+
 
 
 # =============================================================================
