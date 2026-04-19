@@ -309,26 +309,68 @@ def join_station_data(stations_df, readings_df):
         Readings table: 1000 readings
         Joined table: 1000 rows with station details added!
     """
+
+    # Input validation
+    if readings_df is None or len(readings_df) == 0:
+        print("❌ ERROR: Readings DataFrame is empty or None")
+        return pd.DataFrame()
     
+    if stations_df is None or len(stations_df) == 0:
+        print("❌ ERROR: Stations DataFrame is empty or None") 
+        return pd.DataFrame()
+    
+    # Check for required join key
+    if 'station_id' not in readings_df.columns:
+        print("❌ ERROR: 'station_id' column missing from readings data")
+        return pd.DataFrame()
+    
+    if 'station_id' not in stations_df.columns:
+        print("❌ ERROR: 'station_id' column missing from stations data")
+        return pd.DataFrame()
+    
+
+    print("=" * 50)
+    print("JOINING STATION DATA")
+    print("=" * 50)    
     # TODO: Print a header
     # TODO: Use print("=" * 50) and print("JOINING STATION DATA")
-    
+
+    print(f"Input data:")
+    print(f"  Readings: {len(readings_df)} rows, {len(readings_df.columns)} columns")
+    print(f"  Stations: {len(stations_df)} rows, {len(stations_df.columns)} columns")
     # TODO: Print the shapes of both input DataFrames
     # TODO: Show how many stations and how many readings
-    
+
+    # Perform left join to keep all readings
+    print(f"\nPerforming LEFT JOIN (keeping all readings)...")
+    result = pd.merge(readings_df, stations_df, on='station_id', how='left')    
     # TODO: Join the DataFrames using pd.merge()
     # TODO: Use the 'station_id' column as the key
     # TODO: Use how='left' to keep all readings even if station info is missing
-    
+
+    print(f"  Readings: {len(readings_df)} rows, {len(readings_df.columns)} columns")
+    print(f"  Stations: {len(stations_df)} rows, {len(stations_df.columns)} columns")    
     # TODO: Print the shape of the joined DataFrame
     # TODO: Verify all readings are still present
+
+    # Validate results
+    missing_metadata_count = result['station_name'].isna().sum()
+    complete_records = len(result) - missing_metadata_count
     
+    print(f"\nJoin results:")
+    print(f"  Total records: {len(result)}")
+    print(f"  Complete records: {complete_records}")
+    print(f"  Records with missing metadata: {missing_metadata_count}")
+    print(f"  Data completeness: {100*complete_records/len(result):.1f}%")
+    
+    print("\n✅ Station data join completed successfully!")    
     # TODO: Print the new columns that were added
     # TODO: Show which columns came from the stations table
-    
+
+    return result    
     # TODO: Return the joined DataFrame
     
-    pass  # Remove this line when you implement the function
+
 
 
 # =============================================================================
